@@ -1,5 +1,6 @@
 // import 'package:day_24/themes/theme_model.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ocr_application/index.dart';
 import 'package:ocr_application/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,15 +14,39 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late String _email, _password;
+  Future<UserCredential> googleSignIn() async {
+    GoogleSignIn googleSignIn = GoogleSignIn();
+    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    if (googleUser != null) {
+      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      if (googleAuth.idToken != null && googleAuth.accessToken != null) {
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+        final UserCredential user =
+            await _auth.signInWithCredential(credential);
+
+        await Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Index()));
+        return user;
+      } else {
+        throw StateError('Missing Google Auth Token');
+      }
+    } else
+      throw StateError('Sign in Aborted');
+  }
+
   login() async {
     if (_formKey != null &&
         _formKey.currentState != null &&
         _formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Index()));
       try {
         await _auth.signInWithEmailAndPassword(
             email: _email, password: _password);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Index()));
       } catch (e) {
         showError("Error here");
       }
@@ -55,19 +80,6 @@ class _LoginPageState extends State<LoginPage> {
     final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      // appBar: AppBar(
-      // backgroundColor: Colors.transparent,
-      //   elevation: 0,
-      //   // title: Text(
-      //   //   "Light Mode",
-      //   //   style: TextStyle(color: Colors.grey.shade900),
-      //   // ),
-      //   // actions: [
-      //   //   IconButton(
-      //   //       icon: Icon(Icons.wb_sunny, color: Colors.grey.shade900),
-      //   //       onPressed: () {})
-      //   // ],
-      // ),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -108,7 +120,13 @@ class _LoginPageState extends State<LoginPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image(width: 30, image: AssetImage('assets/google.png')),
+                      GestureDetector(
+                        child: Image(
+                          width: 30,
+                          image: AssetImage('assets/google.png'),
+                        ),
+                        onTap: googleSignIn,
+                      ),
                       SizedBox(width: 40),
                       Image(width: 30, image: AssetImage('assets/facebook.png'))
                     ],
@@ -142,6 +160,27 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         SizedBox(
                           height: 20,
+                        ),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: TextFormField(
+                            validator: (input) {
+                              if (input != null && input.isEmpty)
+                                return "Enter Email";
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Password",
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                            obscureText: true,
+                            onSaved: (input) => _password = input!,
+                          ),
                         ),
                         // Container(
                         //   child: TextFormField(
