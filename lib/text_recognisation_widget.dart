@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:clipboard/clipboard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_ml_text_recognition/api/firebase_ml_api.dart';
 // import 'package:firebase_ml_text_recognition/widget/text_area_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ocr_application/main.dart';
+import 'package:ocr_application/scanTextOutput.dart';
 import 'text_area_widget.dart';
 import 'controls_widget.dart';
 import 'firebase_ml_api.dart';
@@ -12,9 +15,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:cross_file/cross_file.dart';
 
 class TextRecognitionWidget extends StatefulWidget {
-  const TextRecognitionWidget(
-    // required Key key,
-  ) ;
+  File? image;
+  TextRecognitionWidget({required this.image});
+
+  // TextRecognitionWidget(
+  //   File? image,
+  // );
   // : super(key: key)
 
   @override
@@ -23,51 +29,137 @@ class TextRecognitionWidget extends StatefulWidget {
 
 class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
   String text = '';
-  File? image;
-  
-  Future<void> _takePicture () async{
-    final imageFile= await ImagePicker.pickImage(source: ImageSource.camera, maxWidth: 600, );
+
+  Future<void> _takePicture() async {
+    final imageFile = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 600,
+    );
     setState(() {
-      image = imageFile;
+      widget.image = imageFile;
     });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body:  Column(
-            children: [
-              Expanded(child: buildImage()),
-              const SizedBox(height: 16),
-              ControlsWidget(
-                onClickedPickImage: _takePicture,
-                onClickedScanText: scanText,
-                onClickedClear: clear, 
+        body: Column(
+          children: [
+            SizedBox(
+              height: 60,
+            ),
+            Text(
+              "Image Preview",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
               ),
-              const SizedBox(height: 16),
-              TextAreaWidget(
-                text: text,
-                onClickedCopy: copyToClipboard, 
-              ),
-            ],
+            ),
+            Expanded(child: buildImage()),
+            const SizedBox(height: 16),
+            ControlsWidget(
+              onClickedPickImage: _takePicture,
+              onClickedScanText: scanText,
+              onClickedClear: clear,
+            ),
+            const SizedBox(height: 40),
+            // TextAreaWidget(
+            //   text: text,
+            //   onClickedCopy: copyToClipboard,
+            // ),
+          ],
+        ),
+        bottomNavigationBar: Container(
+          height: 55.0,
+          child: BottomAppBar(
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.home, color: Colors.black),
+                  onPressed: () {},
+                ),
+                // IconButton(
+                //   icon: Icon(Icons.camera_alt_rounded, color: Colors.black),
+                //   onPressed: () {
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => HomePage()));
+                //   },
+                // ),
+                IconButton(
+                  icon: Icon(Icons.photo, color: Colors.black),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => TextRecognitionWidget()));
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.person, color: Colors.black),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  icon: Icon(Icons.logout, color: Colors.black),
+                  onPressed: () {
+                    showAlertDialog(context);
+                  },
+                )
+              ],
+            ),
           ),
-        
-  );
+        ),
+      );
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    // Widget logOutButton = SalomonBottomBarItem(
+    //   icon: Icon(Icons.logout),
+    //   title: Text("LogOut"),
+    //   selectedColor: Colors.redAccent,
+    // );
+    Widget okButton = TextButton(
+      child: Text("Logout"),
+      onPressed: () {
+        FirebaseAuth.instance.signOut();
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LandingPage()),
+            (route) => false);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout Alert!!"),
+      content: Text("Are you sure you want to logout?"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   Widget buildImage() => Container(
-        child: image != null
-            ? Image.file(image!)
+        child: widget.image != null
+            ? Image.file(widget.image!)
             : Icon(Icons.photo, size: 80, color: Colors.black),
       );
-
-
-
 
   // Future pickImage() async {
   //   // final file = await ImagePicker.pickImage(source: ImageSource.gallery);
   //   // final file = await FilePicker.platform.pickFiles(
   //   //                   type: FileType.custom,
   //   //                   allowedExtensions: ['png', 'jpg', 'jpeg']) as File;
-    
+
   //   XFile? image = await ImagePicker()
   //                     .pickImage(source: ImageSource.gallery);
   //                 final file = File(image!.path);
@@ -80,8 +172,6 @@ class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
   //   });
   //   // setImage(File(file.path));
 
-
-   
   // }
 
   Future scanText() async {
@@ -92,16 +182,22 @@ class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
     //   ),
     // );
 
-    final text = await FirebaseMLApi.recogniseText(image!);
-    print(text);
-    setText(text);
+    final text = await FirebaseMLApi.recogniseText(widget.image!);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ScanTextOutput(
+                  text: text,
+                )));
+
+    // print(text);
+    // setText(text);
 
     // Navigator.of(context).pop();
   }
 
   void clear() {
-    var jpg;
-    setImage(File(jpg));
+    widget.image = null;
     setText('');
   }
 
@@ -113,7 +209,7 @@ class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
 
   void setImage(File newImage) {
     setState(() {
-      image = newImage;
+      widget.image = newImage;
     });
   }
 

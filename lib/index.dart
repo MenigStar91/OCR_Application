@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:ocr_application/firebase_ml_api.dart';
 import 'package:ocr_application/main.dart';
+import 'package:ocr_application/scanTextOutput.dart';
 import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
@@ -13,6 +16,7 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
+  late String scannedText;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -30,12 +34,53 @@ class _IndexState extends State<Index> {
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => TextRecognitionWidget()));
+                onPressed: () async {
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => TextRecognitionWidget()));
+                  final imageFile = await ImagePicker.pickImage(
+                    source: ImageSource.camera,
+                    maxWidth: 600,
+                  );
+                  // final text = await FirebaseMLApi.recogniseText(imageFile);
+                  setState(() {
+                    // scannedText = text;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TextRecognitionWidget(
+                                  image: imageFile,
+                                )));
+                  });
                 },
                 child: Icon(
                   Icons.camera_alt_outlined,
+                ),
+              ),
+              SizedBox(width: 10),
+              FloatingActionButton(
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                onPressed: () async {
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => TextRecognitionWidget()));
+                  final imageFile = await ImagePicker.pickImage(
+                    source: ImageSource.gallery,
+                    maxWidth: 600,
+                  );
+                  // final text = await FirebaseMLApi.recogniseText(imageFile);
+                  setState(() {
+                    // scannedText = text;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TextRecognitionWidget(
+                                  image: imageFile,
+                                )));
+                  });
+                },
+                child: Icon(
+                  Icons.photo,
                 ),
               ),
               // FloatingActionButton(
@@ -176,8 +221,13 @@ class _IndexState extends State<Index> {
               //   },
               // ),
               IconButton(
-                icon: Icon(Icons.photo_album_rounded, color: Colors.black),
-                onPressed: () {},
+                icon: Icon(Icons.photo, color: Colors.black),
+                onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => ScanTextOutput()));
+                },
               ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),

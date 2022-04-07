@@ -17,19 +17,26 @@ class ControlsWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RaisedButton(
-            onPressed: onClickedPickImage,
-            child: Text('Pick Image'),
+            // onPressed: onClickedPickImage,
+            onPressed: () {},
+            child: Text('Text to Audio', style: TextStyle(color: Colors.white)),
+            color: Colors.black,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
           ),
           const SizedBox(width: 12),
           RaisedButton(
             onPressed: onClickedScanText,
-            child: Text('Scan For Text'),
+            child: Text('Scan for Text', style: TextStyle(color: Colors.white)),
+            color: Colors.black,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15.0))),
           ),
           const SizedBox(width: 12),
-          RaisedButton(
-            onPressed: onClickedClear,
-            child: Text('Clear'),
-          )
+          // RaisedButton(
+          //   onPressed: onClickedClear,
+          //   child: Text('Clear'),
+          // )
         ],
       );
 }
