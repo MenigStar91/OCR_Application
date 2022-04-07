@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ocr_application/login.dart';
 import 'package:ocr_application/signup.dart';
@@ -9,7 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
-  await availableCameras();
+  // await availableCameras();
 
   runApp(
     MaterialApp(

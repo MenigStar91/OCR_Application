@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+// import 'package:camera/camera.dart';
+// import 'package:google_ml_kit/google_ml_kit.dart';
 // import 'package:google_ml_kit_example/NlpDetectorViews/entity_extraction_view.dart';
 // import 'package:google_ml_kit_example/NlpDetectorViews/language_translator_view.dart';
 // import 'package:google_ml_kit_example/NlpDetectorViews/smart_reply_view.dart';
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 
 import 'VisionDetectorViews/text_detectorv2_view.dart';
 
-List<CameraDescription> cameras = [];
+// List<CameraDescription> cameras = [];
 
 // Future<void> main() async {
 //   WidgetsFlutterBinding.ensureInitialized();

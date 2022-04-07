@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ocr_application/main.dart';
 import 'package:ocr_application/temp.dart';
+import 'package:ocr_application/tempharshi.dart';
+import 'package:ocr_application/text_recognisation_widget.dart';
 
 class Index extends StatefulWidget {
   const Index({Key? key}) : super(key: key);
@@ -30,7 +32,7 @@ class _IndexState extends State<Index> {
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => GoogleMlKit()));
+                      MaterialPageRoute(builder: (context) => TextRecognitionWidget()));
                 },
                 child: Icon(
                   Icons.camera_alt_outlined,
