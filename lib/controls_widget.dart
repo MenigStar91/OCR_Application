@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:ocr_application/firebase_ml_api.dart';
+import 'package:ocr_application/textToSpeech.dart';
 
 class ControlsWidget extends StatelessWidget {
+  File? image;
   final VoidCallback onClickedPickImage;
   final VoidCallback onClickedScanText;
   final VoidCallback onClickedClear;
 
-  const ControlsWidget({
+  ControlsWidget({
+    required this.image,
     required this.onClickedPickImage,
     required this.onClickedScanText,
     required this.onClickedClear,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => Row(
@@ -18,7 +23,16 @@ class ControlsWidget extends StatelessWidget {
         children: [
           RaisedButton(
             // onPressed: onClickedPickImage,
-            onPressed: () {},
+            onPressed: () async {
+              final text = await FirebaseMLApi.recogniseText(image!);
+
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TextToSpeech(
+                            newVoiceText: text.toString(),
+                          )));
+            },
             child: Text('Text to Audio', style: TextStyle(color: Colors.white)),
             color: Colors.black,
             shape: RoundedRectangleBorder(

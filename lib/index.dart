@@ -6,6 +6,7 @@ import 'package:ocr_application/main.dart';
 import 'package:ocr_application/scanTextOutput.dart';
 import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
+import 'package:ocr_application/textToSpeech.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
 
 class Index extends StatefulWidget {
@@ -231,7 +232,14 @@ class _IndexState extends State<Index> {
               ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
-                onPressed: () {},
+                onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => TextToSpeech(
+                  //               newVoiceText: "Testing it out!!",
+                  //             )));
+                },
               ),
               IconButton(
                 icon: Icon(Icons.logout, color: Colors.black),

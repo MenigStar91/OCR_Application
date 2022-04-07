@@ -1,5 +1,6 @@
 // import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:ocr_application/index.dart';
 import 'package:ocr_application/login.dart';
 import 'package:ocr_application/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,6 +26,31 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late User user;
+  bool isloggedin = false;
+  getUser() async {
+    User? firebaseUser = _auth.currentUser;
+    await firebaseUser!.reload();
+    firebaseUser = _auth.currentUser;
+
+    if (firebaseUser != null) {
+      setState(() {
+        this.user = firebaseUser!;
+        this.isloggedin = true;
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Index()));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // this.checkAuthentification();
+    this.getUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;

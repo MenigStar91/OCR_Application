@@ -58,6 +58,7 @@ class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
             Expanded(child: buildImage()),
             const SizedBox(height: 16),
             ControlsWidget(
+              image: widget.image!,
               onClickedPickImage: _takePicture,
               onClickedScanText: scanText,
               onClickedClear: clear,

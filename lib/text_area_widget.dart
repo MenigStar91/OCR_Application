@@ -49,13 +49,15 @@ class TextAreaWidget extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                height: 10000,
+                height: MediaQuery.of(context).size.height,
+                // height: 100,
                 decoration: BoxDecoration(border: Border.all()),
                 padding: EdgeInsets.all(8),
                 alignment: Alignment.center,
                 child: SelectableText(
                   text.isEmpty ? 'Press Scan for Text to get text' : text,
                   // textAlign: TextAlign.center,
+                  textAlign: TextAlign.justify,
                 ),
               ),
             ),

@@ -357,11 +357,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   //       color: Colors.grey.shade200,
                   //       borderRadius: BorderRadius.all(Radius.circular(20))),
                   //   child: TextField(
-                  //     decoration: InputDecoration(
-                  //       border: InputBorder.none,
-                  //       hintText: "Username",
-                  //       prefixIcon: Icon(Icons.person),
-                  //     ),
+                  // decoration: InputDecoration(
+                  //   border: InputBorder.none,
+                  //   hintText: "Username",
+                  //   prefixIcon: Icon(Icons.person),
+                  // ),
                   //   ),
                   // ),
                   // SizedBox(
