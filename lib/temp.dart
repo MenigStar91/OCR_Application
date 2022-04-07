@@ -1,399 +1,151 @@
-// // import 'package:googleapis/storage/v1.dart';
-// // import 'package:googleapis_auth/auth_io.dart';
+import 'dart:io';
 
-// // Future<void> main() async {
-// //   final httpClient = await clientViaApplicationDefaultCredentials(scopes: [
-// //     StorageApi.devstorageReadOnlyScope,
-// //   ]);
-// //   try {
-// //     final storage = StorageApi(httpClient);
+import 'package:docx_template/src/template.dart';
+import 'package:docx_template/src/model.dart';
+import 'package:flutter/material.dart';
 
-// //     final buckets = await storage.buckets.list('dart-on-cloud');
-// //     final items = buckets.items!;
-// //     print('Received ${items.length} bucket names:');
-// //     for (var file in items) {
-// //       print(file.name);
-// //     }
-// //   } finally {
-// //     httpClient.close();
-// //   }
-// // }
-// import 'dart:async';
-// import 'dart:io' show Platform;
-// import 'package:flutter/foundation.dart' show kIsWeb;
+///
+/// Read file template.docx, produce it and save
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_tts/flutter_tts.dart';
+class ConvertToDoc extends StatefulWidget {
+  const ConvertToDoc({Key? key}) : super(key: key);
 
-// // void main() => runApp(TextToSpeech());
+  @override
+  State<ConvertToDoc> createState() => _ConvertToDocState();
+}
 
-// class TextToSpeech extends StatefulWidget {
-//   @override
-//   _TextToSpeechState createState() => _TextToSpeechState();
-// }
+class _ConvertToDocState extends State<ConvertToDoc> {
+  void convertToDoc() async {
+    final f = File(
+        "C:/Users/lenovo/Documents/GitHub/OCR_Application/assets/tessdata/template.docx");
+    final docx = await DocxTemplate.fromBytes(await f.readAsBytes());
 
-// enum TtsState { playing, stopped, paused, continued }
+    /* 
+    Or in the case of Flutter, you can use rootBundle.load, then get bytes
+    
+    final data = await rootBundle.load('lib/assets/users.docx');
+    final bytes = data.buffer.asUint8List();
 
-// class _TextToSpeechState extends State<TextToSpeech> {
-//   late FlutterTts flutterTts;
-//   String? language;
-//   String? engine;
-//   double volume = 0.5;
-//   double pitch = 1.0;
-//   double rate = 0.5;
-//   bool isCurrentLanguageInstalled = false;
+    final docx = await DocxTemplate.fromBytes(bytes);
+  */
 
-//   String? _newVoiceText;
-//   int? _inputLength;
+    // Load test image for inserting in docx
+    final testFileContent = await File('assets/test.png').readAsBytes();
 
-//   TtsState ttsState = TtsState.stopped;
+    final listNormal = ['Foo', 'Bar', 'Baz'];
+    final listBold = ['ooF', 'raB', 'zaB'];
 
-//   get isPlaying => ttsState == TtsState.playing;
-//   get isStopped => ttsState == TtsState.stopped;
-//   get isPaused => ttsState == TtsState.paused;
-//   get isContinued => ttsState == TtsState.continued;
+    final contentList = <Content>[];
 
-//   bool get isIOS => !kIsWeb && Platform.isIOS;
-//   bool get isAndroid => !kIsWeb && Platform.isAndroid;
-//   bool get isWeb => kIsWeb;
+    final b = listBold.iterator;
+    for (var n in listNormal) {
+      b.moveNext();
 
-//   @override
-//   initState() {
-//     super.initState();
-//     initTts();
-//   }
+      final c = PlainContent("value")
+        ..add(TextContent("normal", n))
+        ..add(TextContent("bold", b.current));
+      contentList.add(c);
+    }
 
-//   initTts() {
-//     flutterTts = FlutterTts();
+    Content c = Content();
+    c
+      ..add(TextContent("docname", "Simple docname"))
+      ..add(TextContent("passport", "Passport NE0323 4456673"))
+      ..add(TableContent("table", [
+        RowContent()
+          ..add(TextContent("key1", "Paul"))
+          ..add(TextContent("key2", "Viberg"))
+          ..add(TextContent("key3", "Engineer"))
+          ..add(ImageContent('img', testFileContent)),
+        RowContent()
+          ..add(TextContent("key1", "Alex"))
+          ..add(TextContent("key2", "Houser"))
+          ..add(TextContent("key3", "CEO & Founder"))
+          ..add(ListContent("tablelist", [
+            TextContent("value", "Mercedes-Benz C-Class S205"),
+            TextContent("value", "Lexus LX 570")
+          ]))
+          ..add(ImageContent('img', testFileContent))
+      ]))
+      ..add(ListContent("list", [
+        TextContent("value", "Engine")
+          ..add(ListContent("listnested", contentList)),
+        TextContent("value", "Gearbox"),
+        TextContent("value", "Chassis")
+      ]))
+      ..add(ListContent("plainlist", [
+        PlainContent("plainview")
+          ..add(TableContent("table", [
+            RowContent()
+              ..add(TextContent("key1", "Paul"))
+              ..add(TextContent("key2", "Viberg"))
+              ..add(TextContent("key3", "Engineer")),
+            RowContent()
+              ..add(TextContent("key1", "Alex"))
+              ..add(TextContent("key2", "Houser"))
+              ..add(TextContent("key3", "CEO & Founder"))
+              ..add(ListContent("tablelist", [
+                TextContent("value", "Mercedes-Benz C-Class S205"),
+                TextContent("value", "Lexus LX 570")
+              ]))
+          ])),
+        PlainContent("plainview")
+          ..add(TableContent("table", [
+            RowContent()
+              ..add(TextContent("key1", "Nathan"))
+              ..add(TextContent("key2", "Anceaux"))
+              ..add(TextContent("key3", "Music artist"))
+              ..add(ListContent(
+                  "tablelist", [TextContent("value", "Peugeot 508")])),
+            RowContent()
+              ..add(TextContent("key1", "Louis"))
+              ..add(TextContent("key2", "Houplain"))
+              ..add(TextContent("key3", "Music artist"))
+              ..add(ListContent("tablelist", [
+                TextContent("value", "Range Rover Velar"),
+                TextContent("value", "Lada Vesta SW Sport")
+              ]))
+          ])),
+      ]))
+      ..add(ListContent("multilineList", [
+        PlainContent("multilinePlain")
+          ..add(TextContent('multilineText', 'line 1')),
+        PlainContent("multilinePlain")
+          ..add(TextContent('multilineText', 'line 2')),
+        PlainContent("multilinePlain")
+          ..add(TextContent('multilineText', 'line 3'))
+      ]))
+      ..add(TextContent('multilineText2', 'line 1\nline 2\n line 3'))
+      ..add(ImageContent('img', testFileContent));
 
-//     _setAwaitOptions();
+    final d = await docx.generate(c);
+    final of = File('generated.docx');
+    if (d != null) await of.writeAsBytes(d);
+  }
 
-//     if (isAndroid) {
-//       _getDefaultEngine();
-//     }
-
-//     flutterTts.setStartHandler(() {
-//       setState(() {
-//         print("Playing");
-//         ttsState = TtsState.playing;
-//       });
-//     });
-
-//     flutterTts.setCompletionHandler(() {
-//       setState(() {
-//         print("Complete");
-//         ttsState = TtsState.stopped;
-//       });
-//     });
-
-//     flutterTts.setCancelHandler(() {
-//       setState(() {
-//         print("Cancel");
-//         ttsState = TtsState.stopped;
-//       });
-//     });
-
-//     if (isWeb || isIOS) {
-//       flutterTts.setPauseHandler(() {
-//         setState(() {
-//           print("Paused");
-//           ttsState = TtsState.paused;
-//         });
-//       });
-
-//       flutterTts.setContinueHandler(() {
-//         setState(() {
-//           print("Continued");
-//           ttsState = TtsState.continued;
-//         });
-//       });
-//     }
-
-//     flutterTts.setErrorHandler((msg) {
-//       setState(() {
-//         print("error: $msg");
-//         ttsState = TtsState.stopped;
-//       });
-//     });
-//   }
-
-//   Future<dynamic> _getLanguages() => flutterTts.getLanguages;
-
-//   Future<dynamic> _getEngines() => flutterTts.getEngines;
-
-//   Future _getDefaultEngine() async {
-//     var engine = await flutterTts.getDefaultEngine;
-//     if (engine != null) {
-//       print(engine);
-//     }
-//   }
-
-//   Future _speak() async {
-//     await flutterTts.setVolume(volume);
-//     await flutterTts.setSpeechRate(rate);
-//     await flutterTts.setPitch(pitch);
-
-//     if (_newVoiceText != null) {
-//       if (_newVoiceText!.isNotEmpty) {
-//         await flutterTts.speak(_newVoiceText!);
-//       }
-//     }
-//   }
-
-//   Future _setAwaitOptions() async {
-//     await flutterTts.awaitSpeakCompletion(true);
-//   }
-
-//   Future _stop() async {
-//     var result = await flutterTts.stop();
-//     if (result == 1) setState(() => ttsState = TtsState.stopped);
-//   }
-
-//   Future _pause() async {
-//     var result = await flutterTts.pause();
-//     if (result == 1) setState(() => ttsState = TtsState.paused);
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     flutterTts.stop();
-//   }
-
-//   List<DropdownMenuItem<String>> getEnginesDropDownMenuItems(dynamic engines) {
-//     var items = <DropdownMenuItem<String>>[];
-//     for (dynamic type in engines) {
-//       items.add(DropdownMenuItem(
-//           value: type as String?, child: Text(type as String)));
-//     }
-//     return items;
-//   }
-
-//   void changedEnginesDropDownItem(String? selectedEngine) {
-//     flutterTts.setEngine(selectedEngine!);
-//     language = null;
-//     setState(() {
-//       engine = selectedEngine;
-//     });
-//   }
-
-//   List<DropdownMenuItem<String>> getLanguageDropDownMenuItems(
-//       dynamic languages) {
-//     var items = <DropdownMenuItem<String>>[];
-//     for (dynamic type in languages) {
-//       items.add(DropdownMenuItem(
-//           value: type as String?, child: Text(type as String)));
-//     }
-//     return items;
-//   }
-
-//   void changedLanguageDropDownItem(String? selectedType) {
-//     setState(() {
-//       language = selectedType;
-//       flutterTts.setLanguage(language!);
-//       if (isAndroid) {
-//         flutterTts
-//             .isLanguageInstalled(language!)
-//             .then((value) => isCurrentLanguageInstalled = (value as bool));
-//       }
-//     });
-//   }
-
-//   void _onChange(String text) {
-//     setState(() {
-//       _newVoiceText = text;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('Flutter TTS'),
-//         ),
-//         body: SingleChildScrollView(
-//           scrollDirection: Axis.vertical,
-//           child: Column(
-//             children: [
-//               _inputSection(),
-//               _btnSection(),
-//               _engineSection(),
-//               _futureBuilder(),
-//               _buildSliders(),
-//               if (isAndroid) _getMaxSpeechInputLengthSection(),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _engineSection() {
-//     if (isAndroid) {
-//       return FutureBuilder<dynamic>(
-//           future: _getEngines(),
-//           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-//             if (snapshot.hasData) {
-//               return _enginesDropDownSection(snapshot.data);
-//             } else if (snapshot.hasError) {
-//               return Text('Error loading engines...');
-//             } else
-//               return Text('Loading engines...');
-//           });
-//     } else
-//       return Container(width: 0, height: 0);
-//   }
-
-//   Widget _futureBuilder() => FutureBuilder<dynamic>(
-//       future: _getLanguages(),
-//       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-//         if (snapshot.hasData) {
-//           return _languageDropDownSection(snapshot.data);
-//         } else if (snapshot.hasError) {
-//           return Text('Error loading languages...');
-//         } else
-//           return Text('Loading Languages...');
-//       });
-
-//   Widget _inputSection() => Container(
-//       alignment: Alignment.topCenter,
-//       padding: EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
-//       child: TextField(
-//         onChanged: (String value) {
-//           _onChange(value);
-//         },
-//       ));
-
-//   Widget _btnSection() {
-//     if (isAndroid) {
-//       return Container(
-//           padding: EdgeInsets.only(top: 50.0),
-//           child:
-//               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-//             _buildButtonColumn(Colors.green, Colors.greenAccent,
-//                 Icons.play_arrow, 'PLAY', _speak),
-//             _buildButtonColumn(
-//                 Colors.red, Colors.redAccent, Icons.stop, 'STOP', _stop),
-//           ]));
-//     } else {
-//       return Container(
-//           padding: EdgeInsets.only(top: 50.0),
-//           child:
-//               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-//             _buildButtonColumn(Colors.green, Colors.greenAccent,
-//                 Icons.play_arrow, 'PLAY', _speak),
-//             _buildButtonColumn(
-//                 Colors.red, Colors.redAccent, Icons.stop, 'STOP', _stop),
-//             _buildButtonColumn(
-//                 Colors.blue, Colors.blueAccent, Icons.pause, 'PAUSE', _pause),
-//           ]));
-//     }
-//   }
-
-//   Widget _enginesDropDownSection(dynamic engines) => Container(
-//         padding: EdgeInsets.only(top: 50.0),
-//         child: DropdownButton(
-//           value: engine,
-//           items: getEnginesDropDownMenuItems(engines),
-//           onChanged: changedEnginesDropDownItem,
-//         ),
-//       );
-
-//   Widget _languageDropDownSection(dynamic languages) => Container(
-//       padding: EdgeInsets.only(top: 10.0),
-//       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-//         DropdownButton(
-//           value: language,
-//           items: getLanguageDropDownMenuItems(languages),
-//           onChanged: changedLanguageDropDownItem,
-//         ),
-//         Visibility(
-//           visible: isAndroid,
-//           child: Text("Is installed: $isCurrentLanguageInstalled"),
-//         ),
-//       ]));
-
-//   Column _buildButtonColumn(Color color, Color splashColor, IconData icon,
-//       String label, Function func) {
-//     return Column(
-//         mainAxisSize: MainAxisSize.min,
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           IconButton(
-//               icon: Icon(icon),
-//               color: color,
-//               splashColor: splashColor,
-//               onPressed: () => func()),
-//           Container(
-//               margin: const EdgeInsets.only(top: 8.0),
-//               child: Text(label,
-//                   style: TextStyle(
-//                       fontSize: 12.0,
-//                       fontWeight: FontWeight.w400,
-//                       color: color)))
-//         ]);
-//   }
-
-//   Widget _getMaxSpeechInputLengthSection() {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//       children: [
-//         ElevatedButton(
-//           child: Text('Get max speech input length'),
-//           onPressed: () async {
-//             _inputLength = await flutterTts.getMaxSpeechInputLength;
-//             setState(() {});
-//           },
-//         ),
-//         Text("$_inputLength characters"),
-//       ],
-//     );
-//   }
-
-//   Widget _buildSliders() {
-//     return Column(
-//       children: [_volume(), _pitch(), _rate()],
-//     );
-//   }
-
-//   Widget _volume() {
-//     return Slider(
-//         value: volume,
-//         onChanged: (newVolume) {
-//           setState(() => volume = newVolume);
-//         },
-//         min: 0.0,
-//         max: 1.0,
-//         divisions: 10,
-//         label: "Volume: $volume");
-//   }
-
-//   Widget _pitch() {
-//     return Slider(
-//       value: pitch,
-//       onChanged: (newPitch) {
-//         setState(() => pitch = newPitch);
-//       },
-//       min: 0.5,
-//       max: 2.0,
-//       divisions: 15,
-//       label: "Pitch: $pitch",
-//       activeColor: Colors.red,
-//     );
-//   }
-
-//   Widget _rate() {
-//     return Slider(
-//       value: rate,
-//       onChanged: (newRate) {
-//         setState(() => rate = newRate);
-//       },
-//       min: 0.0,
-//       max: 1.0,
-//       divisions: 10,
-//       label: "Rate: $rate",
-//       activeColor: Colors.green,
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: Container(
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                onPressed: convertToDoc,
+                child: Icon(
+                  Icons.download,
+                ),
+              ),
+              SizedBox(width: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
