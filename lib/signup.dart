@@ -243,6 +243,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         onTap: googleSignIn,
                       ),
+                      SizedBox(width: 40),
                       Image(width: 30, image: AssetImage('assets/facebook.png'))
                     ],
                   ),

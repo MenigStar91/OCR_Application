@@ -58,6 +58,9 @@ dependencies:
   firebase_storage: ^10.2.11
   open_file: ^3.2.1
   syncfusion_flutter_pdf: ^20.1.47-beta.1
+  cloud_firestore_web: ^2.6.11
+  flutter_share: ^2.0.0
+  screenshot: ^1.2.3
   
 dev_dependencies:
   flutter_test:

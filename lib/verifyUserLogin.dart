@@ -458,7 +458,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
                               _isResendAgain
                                   ? "Try again in " + _start.toString()
                                   : "Resend",
-                              style: TextStyle(color: Colors.blueAccent),
+                              style: TextStyle(color: Colors.black),
                             ))
                       ],
                     ),
@@ -476,7 +476,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
                           : () {
                               verify();
                             },
-                      color: Colors.orange.shade400,
+                      color: Colors.black,
                       minWidth: MediaQuery.of(context).size.width * 0.8,
                       height: 50,
                       child: _isLoading

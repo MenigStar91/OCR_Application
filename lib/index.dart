@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocr_application/firebase_ml_api.dart';
 import 'package:ocr_application/main.dart';
@@ -8,6 +12,7 @@ import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
 import 'package:ocr_application/textToSpeech.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Index extends StatefulWidget {
   const Index({Key? key}) : super(key: key);
@@ -17,12 +22,35 @@ class Index extends StatefulWidget {
 }
 
 class _IndexState extends State<Index> {
+  List<String>? nameOfDocs = [];
+  int i = 0;
+  getCountOfDocs() async {
+    var data = await FirebaseStorage.instance
+        .ref()
+        .child("${FirebaseAuth.instance.currentUser!.displayName}")
+        .listAll();
+    data.items.forEach(
+      (element) => {
+        print("here it is"),
+        setState(() {
+          i = i + 1;
+          nameOfDocs!.insert(0, element.name);
+        }),
+      },
+    );
+  }
+
   late String scannedText;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late String _searchValue;
   @override
+  void initState() {
+    // this.checkAuthentification();
+    this.getCountOfDocs();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Container(
@@ -42,16 +70,21 @@ class _IndexState extends State<Index> {
                     source: ImageSource.camera,
                     maxWidth: 600,
                   );
+                  if (imageFile == null) {
+                    print("file null hai");
+                  }
                   // final text = await FirebaseMLApi.recogniseText(imageFile);
-                  setState(() {
-                    // scannedText = text;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TextRecognitionWidget(
-                                  image: imageFile,
-                                )));
-                  });
+                  else {
+                    setState(() {
+                      // scannedText = text;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TextRecognitionWidget(
+                                    image: imageFile,
+                                  )));
+                    });
+                  }
                 },
                 child: Icon(
                   Icons.camera_alt_outlined,
@@ -69,16 +102,21 @@ class _IndexState extends State<Index> {
                     source: ImageSource.gallery,
                     maxWidth: 600,
                   );
+                  if (imageFile == null) {
+                    print("file null hai");
+                  }
                   // final text = await FirebaseMLApi.recogniseText(imageFile);
-                  setState(() {
-                    // scannedText = text;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TextRecognitionWidget(
-                                  image: imageFile,
-                                )));
-                  });
+                  else {
+                    setState(() {
+                      // scannedText = text;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TextRecognitionWidget(
+                                    image: imageFile,
+                                  )));
+                    });
+                  }
                 },
                 child: Icon(
                   Icons.photo,
@@ -149,59 +187,148 @@ class _IndexState extends State<Index> {
             ))
           ];
         },
-        body: Container(
-          child: ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: 1,
-            itemBuilder: (BuildContext context, int index) {
-              return Card(
-                elevation: 8.0,
-                margin:
-                    new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                // shape: ,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(
-                      10,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              for (var a = 0; a < i; a = a + 1)
+                Card(
+                  elevation: 8.0,
+                  margin:
+                      new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                  // shape: ,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
                     ),
-                  ),
-                  child: ListTile(
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                    leading: Container(
-                      padding: EdgeInsets.only(right: 12.0),
-                      decoration: new BoxDecoration(
-                          // borderRadius: BorderRadius.circular(
-                          //           50,
-                          //         ),
-                          border: new Border(
-                              right: new BorderSide(
-                                  width: 1.0, color: Colors.black))),
-                      child: Icon(Icons.autorenew, color: Colors.black),
-                    ),
-                    title: Text(
-                      "Document",
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ),
-                    // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                      leading: Container(
+                        padding: EdgeInsets.only(right: 12.0),
+                        decoration: new BoxDecoration(
+                            // borderRadius: BorderRadius.circular(
+                            //           50,
+                            //         ),
+                            border: new Border(
+                                right: new BorderSide(
+                                    width: 1.0, color: Colors.black))),
+                        child: GestureDetector(
+                          child:
+                              Icon(Icons.keyboard_voice, color: Colors.black),
+                          onTap: () async {
+                            FirebaseStorage storage = FirebaseStorage.instance;
+                            Reference ref = storage.ref().child('${i - a - 1}.txt' ==
+                                    nameOfDocs![a]
+                                ? "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.txt"
+                                : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
+                            Uint8List? downloadedData = await ref.getData();
+                            String textHere = (utf8.decode(downloadedData!));
+                            // print(ref.putString(
+                            //   putStringText,
+                            // ));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TextToSpeech(
+                                          newVoiceText: textHere,
+                                        )));
+                          },
+                        ),
+                      ),
+                      title: Text(
+                        nameOfDocs![a],
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                    subtitle: Row(
-                      children: <Widget>[
-                        Icon(Icons.linear_scale, color: Colors.black),
-                        Text("Date", style: TextStyle(color: Colors.black))
-                      ],
+                      subtitle: Row(
+                        children: <Widget>[
+                          Icon(Icons.linear_scale, color: Colors.black),
+                          Text("Date", style: TextStyle(color: Colors.black))
+                        ],
+                      ),
+                      trailing: GestureDetector(
+                          child: Icon(Icons.share,
+                              color: Colors.black, size: 30.0),
+                          onTap: () async {
+                            print('${i - a - 1}.txt');
+                            print(nameOfDocs![a]);
+                            FirebaseStorage storage = FirebaseStorage.instance;
+                            Reference ref = storage.ref().child('${i - a - 1}.txt' ==
+                                    nameOfDocs![a]
+                                ? "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.txt"
+                                : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
+
+                            await FlutterShare.share(
+                                title: 'HMI OCR Share',
+                                text: 'My File',
+                                linkUrl:
+                                    (await ref.getDownloadURL()).toString(),
+                                chooserTitle: 'Example Chooser Title');
+                          }),
                     ),
-                    trailing: Icon(Icons.keyboard_arrow_right,
-                        color: Colors.black, size: 30.0),
                   ),
                 ),
-              );
-            },
+            ],
           ),
         ),
+        // body: Container(
+        //   child: ListView.builder(
+        //     scrollDirection: Axis.vertical,
+        //     shrinkWrap: true,
+        //     itemCount: 1,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       return Card(
+        //         elevation: 8.0,
+        //         margin:
+        //             new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+        //         // shape: ,
+        //         child: Container(
+        //           decoration: BoxDecoration(
+        //             color: Colors.white,
+        //             borderRadius: BorderRadius.circular(
+        //               10,
+        //             ),
+        //           ),
+        //           child: ListTile(
+        //             contentPadding:
+        //                 EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        //             leading: Container(
+        //               padding: EdgeInsets.only(right: 12.0),
+        //               decoration: new BoxDecoration(
+        //                   // borderRadius: BorderRadius.circular(
+        //                   //           50,
+        //                   //         ),
+        //                   border: new Border(
+        //                       right: new BorderSide(
+        //                           width: 1.0, color: Colors.black))),
+        //               child: Icon(Icons.autorenew, color: Colors.black),
+        //             ),
+        //             title: Text(
+        //               "Document",
+        //               style: TextStyle(
+        //                   color: Colors.black, fontWeight: FontWeight.bold),
+        //             ),
+        //             // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+
+        //             subtitle: Row(
+        //               children: <Widget>[
+        //                 Icon(Icons.linear_scale, color: Colors.black),
+        //                 Text("Date", style: TextStyle(color: Colors.black))
+        //               ],
+        //             ),
+        //             trailing: Icon(Icons.keyboard_arrow_right,
+        //                 color: Colors.black, size: 30.0),
+        //           ),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
       ),
       bottomNavigationBar: Container(
         height: 55.0,
@@ -231,12 +358,8 @@ class _IndexState extends State<Index> {
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
                 onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => TextToSpeech(
-                  //               newVoiceText: "Testing it out!!",
-                  //             )));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ShareFile()));
                 },
               ),
               IconButton(
