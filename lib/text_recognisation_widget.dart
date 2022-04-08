@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_ml_text_recognition/api/firebase_ml_api.dart';
 // import 'package:firebase_ml_text_recognition/widget/text_area_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocr_application/main.dart';
 import 'package:ocr_application/scanTextOutput.dart';
@@ -40,8 +41,60 @@ class _TextRecognitionWidgetState extends State<TextRecognitionWidget> {
     });
   }
 
+  Future<Null> _cropImage() async {
+    File? croppedFile = await ImageCropper().cropImage(
+        sourcePath: widget.image!.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+          showCropGrid: true,
+          activeControlsWidgetColor: Colors.orange,
+        ),
+        iosUiSettings: IOSUiSettings(
+          title: 'Crop the image',
+        ));
+    if (croppedFile != null) {
+      setState(() {
+        widget.image = croppedFile;
+      });
+      // setState(() {
+      //   state = AppState.cropped;
+      // });
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
+        floatingActionButton: FloatingActionButton(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(15.0))),
+          backgroundColor: Colors.black,
+          onPressed: () {
+            _cropImage();
+          },
+          child: Icon(Icons.crop),
+        ),
         body: Column(
           children: [
             SizedBox(

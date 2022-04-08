@@ -224,8 +224,8 @@ class _IndexState extends State<Index> {
               IconButton(
                 icon: Icon(Icons.photo, color: Colors.black),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ConvertToDoc()));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => EditImage()));
                 },
               ),
               IconButton(

@@ -12,39 +12,39 @@ class TextAreaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        floatingActionButton: Container(
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                  onPressed: onClickedCopy,
-                  child: Icon(Icons.copy, color: Colors.white),
-                ),
-                // SizedBox(width: 10),
-                // FloatingActionButton(
-                //   backgroundColor: Colors.black,
-                //   shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                //   onPressed: () async {},
-                //   child: Icon(
-                //     Icons.photo,
-                //   ),
-                // ),
-                // FloatingActionButton(
-                //   onPressed: () {},
-                //   child: Icon(
-                //     Icons.photo_album_rounded,
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-        ),
+        // floatingActionButton: Container(
+        //   child: Align(
+        //     alignment: Alignment.bottomRight,
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.end,
+        //       children: [
+        // FloatingActionButton(
+        //   backgroundColor: Colors.black,
+        //   shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        //   onPressed: onClickedCopy,
+        //   child: Icon(Icons.copy, color: Colors.white),
+        // ),
+        //         // SizedBox(width: 10),
+        //         // FloatingActionButton(
+        //         //   backgroundColor: Colors.black,
+        //         //   shape: RoundedRectangleBorder(
+        //         //       borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        //         //   onPressed: () async {},
+        //         //   child: Icon(
+        //         //     Icons.photo,
+        //         //   ),
+        //         // ),
+        //         // FloatingActionButton(
+        //         //   onPressed: () {},
+        //         //   child: Icon(
+        //         //     Icons.photo_album_rounded,
+        //         //   ),
+        //         // ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         body: Row(
           children: [
             Expanded(
