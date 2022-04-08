@@ -15,13 +15,17 @@ import 'package:ocr_application/firebase_ml_api.dart';
 import 'package:ocr_application/main.dart';
 import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
+import 'package:ocr_application/tempharshi2.dart';
 import 'package:ocr_application/text_area_widget.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'save_file_mobile.dart' if (dart.library.html) 'save_file_web.dart';
+import 'package:intl/intl.dart';
+
 
 // import 'dart:html' as html;
 
@@ -80,6 +84,186 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
     if (widget.text.trim() != '') {
       FlutterClipboard.copy(widget.text);
     }
+  }
+  Future<void> generateInvoice() async {
+    //Create a PDF document.
+    final PdfDocument document = PdfDocument();
+    //Add page to the PDF
+    final PdfPage page = document.pages.add();
+    //Get page client size
+    final Size pageSize = page.getClientSize();
+    //Draw rectangle
+    page.graphics.drawRectangle(
+        bounds: Rect.fromLTWH(0, 0, pageSize.width, pageSize.height),
+        pen: PdfPen(PdfColor(142, 170, 219, 255)));
+    //Generate PDF grid.
+    final PdfGrid grid = getGrid();
+    //Draw the header section by creating text element
+    final PdfLayoutResult result = drawHeader(page, pageSize, grid);
+    //Draw grid
+    // drawGrid(page, grid, result);
+    //Add invoice footer
+    drawFooter(page, pageSize);
+    //Save the PDF document
+    final List<int> bytes = document.save();
+    //Dispose the document.
+    document.dispose();
+    //Save and launch the file.
+    await saveAndLaunchFile(bytes, 'Invoice.pdf');
+  }
+
+  //Draws the invoice header
+  PdfLayoutResult drawHeader(PdfPage page, Size pageSize, PdfGrid grid) {
+    //Draw rectangle
+    page.graphics.drawRectangle(
+        brush: PdfSolidBrush(PdfColor(91, 126, 215, 255)),
+        bounds: Rect.fromLTWH(0, 0, pageSize.width - 115, 90));
+    //Draw string
+    page.graphics.drawString(
+        'Extracted PDF', PdfStandardFont(PdfFontFamily.helvetica, 30),
+        brush: PdfBrushes.white,
+        bounds: Rect.fromLTWH(25, 0, pageSize.width - 115, 90),
+        format: PdfStringFormat(lineAlignment: PdfVerticalAlignment.middle));
+
+    // page.graphics.drawRectangle(
+    //     bounds: Rect.fromLTWH(400, 0, pageSize.width - 400, 90),
+    //     brush: PdfSolidBrush(PdfColor(65, 104, 205)));
+
+    // page.graphics.drawString(r'$' + getTotalAmount(grid).toString(),
+    //     PdfStandardFont(PdfFontFamily.helvetica, 18),
+    //     bounds: Rect.fromLTWH(400, 0, pageSize.width - 400, 100),
+    //     brush: PdfBrushes.white,
+    //     format: PdfStringFormat(
+    //         alignment: PdfTextAlignment.center,
+    //         lineAlignment: PdfVerticalAlignment.middle));
+
+    final PdfFont contentFont = PdfStandardFont(PdfFontFamily.helvetica, 9);
+    //Draw string
+    // page.graphics.drawString('Amount', contentFont,
+    //     brush: PdfBrushes.white,
+    //     bounds: Rect.fromLTWH(400, 0, pageSize.width - 400, 33),
+    //     format: PdfStringFormat(
+    //         alignment: PdfTextAlignment.center,
+    //         lineAlignment: PdfVerticalAlignment.bottom));
+    //Create data foramt and convert it to text.
+    final DateFormat format = DateFormat.yMMMMd('en_US');
+    final String invoiceNumber =
+        'Date: ${format.format(DateTime.now())}';
+    final Size contentSize = contentFont.measureString(invoiceNumber);
+    // ignore: leading_newlines_in_multiline_strings
+    String address = '''${widget.text}''';
+    // String address = '''Test''';
+
+
+    PdfTextElement(text: invoiceNumber, font: contentFont).draw(
+        page: page,
+        bounds: Rect.fromLTWH(pageSize.width - (contentSize.width + 30), 120,
+            contentSize.width + 30, pageSize.height - 120));
+
+    return PdfTextElement(text: address, font: contentFont).draw(
+        page: page,
+        bounds: Rect.fromLTWH(50, 120,
+            pageSize.width+30 , pageSize.height - 120))!;
+  }
+
+  //Draws the grid
+  // void drawGrid(PdfPage page, PdfGrid grid, PdfLayoutResult result) {
+  //   Rect? totalPriceCellBounds;
+  //   Rect? quantityCellBounds;
+  //   //Invoke the beginCellLayout event.
+  //   grid.beginCellLayout = (Object sender, PdfGridBeginCellLayoutArgs args) {
+  //     final PdfGrid grid = sender as PdfGrid;
+  //     if (args.cellIndex == grid.columns.count - 1) {
+  //       totalPriceCellBounds = args.bounds;
+  //     } else if (args.cellIndex == grid.columns.count - 2) {
+  //       quantityCellBounds = args.bounds;
+  //     }
+  //   };
+  //   //Draw the PDF grid and get the result.
+  //   result = grid.draw(
+  //       page: page, bounds: Rect.fromLTWH(0, result.bounds.bottom + 40, 0, 0))!;
+
+  //   //Draw grand total.
+  //   page.graphics.drawString('Grand Total',
+  //       PdfStandardFont(PdfFontFamily.helvetica, 9, style: PdfFontStyle.bold),
+  //       bounds: Rect.fromLTWH(
+  //           quantityCellBounds!.left,
+  //           result.bounds.bottom + 10,
+  //           quantityCellBounds!.width,
+  //           quantityCellBounds!.height));
+  //   page.graphics.drawString(getTotalAmount(grid).toString(),
+  //       PdfStandardFont(PdfFontFamily.helvetica, 9, style: PdfFontStyle.bold),
+  //       bounds: Rect.fromLTWH(
+  //           totalPriceCellBounds!.left,
+  //           result.bounds.bottom + 10,
+  //           totalPriceCellBounds!.width,
+  //           totalPriceCellBounds!.height));
+  // }
+
+  //Draw the invoice footer data.
+  void drawFooter(PdfPage page, Size pageSize) {
+    final PdfPen linePen =
+        PdfPen(PdfColor(142, 170, 219, 255), dashStyle: PdfDashStyle.custom);
+    linePen.dashPattern = <double>[3, 3];
+    //Draw line
+    page.graphics.drawLine(linePen, Offset(0, pageSize.height - 100),
+        Offset(pageSize.width, pageSize.height - 100));
+
+    const String footerContent =
+        // ignore: leading_newlines_in_multiline_strings
+        '''Created with <3 at IITJ''';
+
+    //Added 30 as a margin for the layout
+    page.graphics.drawString(
+        footerContent, PdfStandardFont(PdfFontFamily.helvetica, 9),
+        format: PdfStringFormat(alignment: PdfTextAlignment.right),
+        bounds: Rect.fromLTWH(pageSize.width - 30, pageSize.height - 70, 0, 0));
+  }
+
+  //Create PDF grid and return
+  PdfGrid getGrid() {
+    //Create a PDF grid
+    final PdfGrid grid = PdfGrid();
+    //Secify the columns count to the grid.
+    grid.columns.add(count: 5);
+    //Create the header row of the grid.
+    final PdfGridRow headerRow = grid.headers.add(1)[0];
+    //Set style
+    headerRow.style.backgroundBrush = PdfSolidBrush(PdfColor(68, 114, 196));
+    headerRow.style.textBrush = PdfBrushes.white;
+    headerRow.cells[0].value = 'Product Id';
+    headerRow.cells[0].stringFormat.alignment = PdfTextAlignment.center;
+    headerRow.cells[1].value = 'Product Name';
+    headerRow.cells[2].value = 'Price';
+    headerRow.cells[3].value = 'Quantity';
+    headerRow.cells[4].value = 'Total';
+    // //Add rows
+    // addProducts('CA-1098', 'AWC Logo Cap', 8.99, 2, 17.98, grid);
+    // addProducts('LJ-0192', 'Long-Sleeve Logo Jersey,M', 49.99, 3, 149.97, grid);
+    // addProducts('So-B909-M', 'Mountain Bike Socks,M', 9.5, 2, 19, grid);
+    // addProducts('LJ-0192', 'Long-Sleeve Logo Jersey,M', 49.99, 4, 199.96, grid);
+    // addProducts('FK-5136', 'ML Fork', 175.49, 6, 1052.94, grid);
+    // addProducts('HL-U509', 'Sports-100 Helmet,Black', 34.99, 1, 34.99, grid);
+    //Apply the table built-in style
+    grid.applyBuiltInStyle(PdfGridBuiltInStyle.listTable4Accent5);
+    //Set gird columns width
+    grid.columns[1].width = 200;
+    for (int i = 0; i < headerRow.cells.count; i++) {
+      headerRow.cells[i].style.cellPadding =
+          PdfPaddings(bottom: 5, left: 5, right: 5, top: 5);
+    }
+    for (int i = 0; i < grid.rows.count; i++) {
+      final PdfGridRow row = grid.rows[i];
+      for (int j = 0; j < row.cells.count; j++) {
+        final PdfGridCell cell = row.cells[j];
+        if (j == 0) {
+          cell.stringFormat.alignment = PdfTextAlignment.center;
+        }
+        cell.style.cellPadding =
+            PdfPaddings(bottom: 5, left: 5, right: 5, top: 5);
+      }
+    }
+    return grid;
   }
 // You need to import these 2 libraries besides another libraries to work with this code
 
@@ -149,6 +333,7 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               FloatingActionButton(
+                heroTag: "1",
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
@@ -156,7 +341,18 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
                 child: Icon(Icons.copy, color: Colors.white),
               ),
               SizedBox(width: 10),
+
               FloatingActionButton(
+                      heroTag: "2",
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                onPressed: generateInvoice,
+                child: Icon(Icons.picture_as_pdf_rounded,color: Colors.white),
+              ),
+              SizedBox(width: 10),
+              FloatingActionButton(
+                      heroTag: "3",
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
@@ -334,7 +530,11 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
               ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
-                onPressed: () {},
+                // onPressed: () {
+                //   Navigator.push(context,
+                //       MaterialPageRoute(builder: (context) => CreatePdfWidget(newVoiceText: widget.text)));
+                // },
+                onPressed: (){},
               ),
               IconButton(
                 icon: Icon(Icons.logout, color: Colors.black),

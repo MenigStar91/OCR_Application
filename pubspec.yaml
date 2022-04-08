@@ -57,6 +57,7 @@ dependencies:
   permission_handler: ^9.2.0
   firebase_storage: ^10.2.11
   open_file: ^3.2.1
+  syncfusion_flutter_pdf: ^20.1.47-beta.1
   
 dev_dependencies:
   flutter_test:
