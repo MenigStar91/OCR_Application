@@ -299,6 +299,11 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
             ),
             (route) => false,
           );
+        } else {
+          setState(() {
+            _code = '';
+          });
+          showAlertDialog(context);
         }
       }
     });
@@ -504,5 +509,37 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
                 ],
               )),
         ));
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    // Widget logOutButton = SalomonBottomBarItem(
+    //   icon: Icon(Icons.logout),
+    //   title: Text("LogOut"),
+    //   selectedColor: Colors.redAccent,
+    // );
+    // Widget okButton = TextButton(
+    //   child: Text("Logout"),
+    //   onPressed: () {
+    //     // Navigator.push(
+    //     //     context, MaterialPageRoute(builder: (context) => HomePage()));
+
+    //   },
+    // );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Incorrect OTP"),
+      content: Text("Please fill the correct otp"),
+      actions: [],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

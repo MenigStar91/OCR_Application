@@ -192,85 +192,103 @@ class _IndexState extends State<Index> {
           child: Column(
             children: [
               for (var a = 0; a < i; a = a + 1)
-                Card(
-                  elevation: 8.0,
-                  margin:
-                      new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                  // shape: ,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        10,
+                GestureDetector(
+                  onTap: () async {
+                    FirebaseStorage storage = FirebaseStorage.instance;
+                    Reference ref = storage.ref().child('${nameOfDocs![a]}' ==
+                            nameOfDocs![a]
+                        ? "${FirebaseAuth.instance.currentUser!.displayName}/${nameOfDocs![a]}"
+                        : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
+                    Uint8List? downloadedData = await ref.getData();
+                    String textHere = (utf8.decode(downloadedData!));
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScanTextOutput(
+                                  text: textHere,
+                                )));
+                  },
+                  child: Card(
+                    elevation: 8.0,
+                    margin: new EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 6.0),
+                    // shape: ,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
                       ),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 10.0),
-                      leading: Container(
-                        padding: EdgeInsets.only(right: 12.0),
-                        decoration: new BoxDecoration(
-                            // borderRadius: BorderRadius.circular(
-                            //           50,
-                            //         ),
-                            border: new Border(
-                                right: new BorderSide(
-                                    width: 1.0, color: Colors.black))),
-                        child: GestureDetector(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        leading: Container(
+                          padding: EdgeInsets.only(right: 12.0),
+                          decoration: new BoxDecoration(
+                              // borderRadius: BorderRadius.circular(
+                              //           50,
+                              //         ),
+                              border: new Border(
+                                  right: new BorderSide(
+                                      width: 1.0, color: Colors.black))),
                           child:
                               Icon(Icons.keyboard_voice, color: Colors.black),
+                        ),
+                        title: GestureDetector(
+                          child: Text(
+                            nameOfDocs![a],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
                           onTap: () async {
                             FirebaseStorage storage = FirebaseStorage.instance;
-                            Reference ref = storage.ref().child('${i - a - 1}.txt' ==
+                            Reference ref = storage.ref().child('${nameOfDocs![a]}' ==
                                     nameOfDocs![a]
-                                ? "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.txt"
+                                ? "${FirebaseAuth.instance.currentUser!.displayName}/${nameOfDocs![a]}"
                                 : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
                             Uint8List? downloadedData = await ref.getData();
                             String textHere = (utf8.decode(downloadedData!));
-                            // print(ref.putString(
-                            //   putStringText,
-                            // ));
+
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => TextToSpeech(
-                                          newVoiceText: textHere,
+                                    builder: (context) => ScanTextOutput(
+                                          text: textHere,
                                         )));
                           },
                         ),
-                      ),
-                      title: Text(
-                        nameOfDocs![a],
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
-                      subtitle: Row(
-                        children: <Widget>[
-                          Icon(Icons.linear_scale, color: Colors.black),
-                          Text("Date", style: TextStyle(color: Colors.black))
-                        ],
-                      ),
-                      trailing: GestureDetector(
-                          child: Icon(Icons.share,
-                              color: Colors.black, size: 30.0),
-                          onTap: () async {
-                            print('${i - a - 1}.txt');
-                            print(nameOfDocs![a]);
-                            FirebaseStorage storage = FirebaseStorage.instance;
-                            Reference ref = storage.ref().child('${i - a - 1}.txt' ==
-                                    nameOfDocs![a]
-                                ? "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.txt"
-                                : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
+                        subtitle: Row(
+                          children: <Widget>[
+                            Icon(Icons.linear_scale, color: Colors.black),
+                            Text("Date", style: TextStyle(color: Colors.black))
+                          ],
+                        ),
+                        trailing: GestureDetector(
+                            child: Icon(Icons.share,
+                                color: Colors.black, size: 30.0),
+                            onTap: () async {
+                              print('${i - a - 1}.txt');
+                              print(nameOfDocs![a]);
+                              FirebaseStorage storage =
+                                  FirebaseStorage.instance;
+                              Reference ref = storage.ref().child(
+                                  '${nameOfDocs![a]}' == nameOfDocs![a]
+                                      ? "${FirebaseAuth.instance.currentUser!.displayName}/${nameOfDocs![a]}"
+                                      : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
 
-                            await FlutterShare.share(
-                                title: 'HMI OCR Share',
-                                text: 'My File',
-                                linkUrl:
-                                    (await ref.getDownloadURL()).toString(),
-                                chooserTitle: 'Example Chooser Title');
-                          }),
+                              await FlutterShare.share(
+                                  title: 'HMI OCR Share',
+                                  text: 'My File',
+                                  linkUrl:
+                                      (await ref.getDownloadURL()).toString(),
+                                  chooserTitle: 'Example Chooser Title');
+                            }),
+                      ),
                     ),
                   ),
                 ),
@@ -340,7 +358,10 @@ class _IndexState extends State<Index> {
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.home, color: Colors.black),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Index()));
+                },
               ),
               // IconButton(
               //   icon: Icon(Icons.camera_alt_rounded, color: Colors.black),
@@ -351,7 +372,7 @@ class _IndexState extends State<Index> {
               // ),
               IconButton(
                 icon: Icon(Icons.photo, color: Colors.black),
-                onPressed: () async {},
+                onPressed: () {},
               ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
