@@ -17,7 +17,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late String _email, _password, _name;
+  String? _email, _password, _name, _password2;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
@@ -36,7 +36,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     try {
       UserCredential user = await _auth.createUserWithEmailAndPassword(
-          email: _email, password: _password);
+          email: _email!, password: _password!);
       if (user != null) {
         await _auth.currentUser?.updateProfile(displayName: _name);
       }
@@ -61,11 +61,11 @@ class _SignUpPageState extends State<SignUpPage> {
       ..recipients.add(email)
       // ..ccRecipients.addAll(['destCc1@example.com', 'destCc2@example.com'])
       // ..bccRecipients.add(Address('bccAddress@example.com'))
-      ..subject = 'No reply mail From Library IITJ::  ${DateTime.now()}'
+      ..subject = 'No reply mail From OCR Application::  ${DateTime.now()}'
       ..text = 'Heyy ' +
           personName +
           '!' +
-          '\nThe mail is from admin @Library IITJ ' +
+          '\nThe mail is from admin OCR Application ' +
           ' on ${DateTime.now()}' +
           '\nYour 4 digit one time password is' +
           '\n' +
@@ -152,22 +152,35 @@ class _SignUpPageState extends State<SignUpPage> {
 
   sendOTP() async {
     _formKey.currentState?.save();
-    var rng = new Random();
-    var code = rng.nextInt(9999);
-    if (code < 1000) {
-      code = code + 1000;
+
+    if (_email == null ||
+        _name == null ||
+        _password == null ||
+        _password2 == null) {
+      print("here it is");
+      showError("Please fill the details!!");
+    } else {
+      if (_password == _password2) {
+        var rng = new Random();
+        var code = rng.nextInt(9999);
+        if (code < 1000) {
+          code = code + 1000;
+        }
+        sendMail(_email!, _name!, code.toString());
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => VerifyUserLogin(
+                      email: _email!,
+                      name: _name!,
+                      otp: code.toString(),
+                      password: _password!,
+                    )),
+            (route) => false);
+      } else {
+        showError("Password and Confirm Password are different");
+      }
     }
-    sendMail(_email, _name, code.toString());
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => VerifyUserLogin(
-                  email: _email,
-                  name: _name,
-                  otp: code.toString(),
-                  password: _password,
-                )),
-        (route) => false);
   }
 
   showError(String errormessage) {
@@ -319,6 +332,30 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             obscureText: true,
                             onSaved: (input) => _password = input!,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: TextFormField(
+                            validator: (input) {
+                              if (input != null && input.isEmpty)
+                                return "Enter Email";
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Confirm Password",
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                            obscureText: true,
+                            onSaved: (input) => _password2 = input!,
                           ),
                         ),
                         // Container(

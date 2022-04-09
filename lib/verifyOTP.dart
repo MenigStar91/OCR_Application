@@ -1,34 +1,27 @@
 import 'dart:math';
 
 import 'package:animate_do/animate_do.dart';
-// import 'package:firebaseFireBaseAuth.instance/firebaseFireBaseAuth.instance.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_verification_code/flutter_verification_code.dart';
-import 'package:ocr_application/index.dart';
 // import 'package:loginapp/userProfile.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
+import 'package:ocr_application/userProfile.dart';
 
-class VerifyUserLogin extends StatefulWidget {
-  // const VerifyUserLogin({Key? key}) : super(key: key);
+class Verificatoin extends StatefulWidget {
+  // const Verificatoin({Key? key}) : super(key: key);
   final String otp;
   final String email;
-  final String password;
-  final String name;
 
   @override
-  _VerifyUserLoginState createState() => _VerifyUserLoginState();
-  VerifyUserLogin(
-      {required this.otp,
-      required this.email,
-      required this.password,
-      required this.name});
+  _VerificatoinState createState() => _VerificatoinState();
+  Verificatoin({required this.otp, required this.email});
 }
 
-class _VerifyUserLoginState extends State<VerifyUserLogin> {
+class _VerificatoinState extends State<Verificatoin> {
   bool _isResendAgain = false;
   bool _isVerified = false;
   bool _isLoading = false;
@@ -44,7 +37,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
     setState(() async {
       _isResend = 1;
       Future<void> sendMail(
-          String email, String? personName, String code) async {
+          String email, String personName, String code) async {
         String username = 'goswamipranav11@gmail.com';
         String password = 'Pranav@2002';
 
@@ -62,7 +55,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
           // ..bccRecipients.add(Address('bccAddress@example.com'))
           ..subject = 'No reply mail From OCR Application::  ${DateTime.now()}'
           ..text = 'Heyy ' +
-              personName! +
+              personName +
               '!' +
               '\nThe mail is from admin OCR Application ' +
               ' on ${DateTime.now()}' +
@@ -109,7 +102,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
         //     //   ..cid = '<myimg@3.141>'
         //   ];
 
-        // final sendReport2 = await send(message, smtpServer);
+        final sendReport2 = await send(message, smtpServer);
 
         // Sending multiple messages with the same connection
         //
@@ -117,7 +110,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
         var connection = PersistentConnection(smtpServer);
 
         // Send the first message
-        // await connection.send(message);
+        await connection.send(message);
 
         // send the equivalent message
         // await connection.send(equivalentMessage);
@@ -133,7 +126,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
       }
       _resentCode = code;
       await sendMail(widget.email,
-          FirebaseAuth.instance.currentUser!.displayName, code.toString());
+          FirebaseAuth.instance.currentUser!.displayName!, code.toString());
     });
 
     const oneSec = Duration(seconds: 1);
@@ -150,100 +143,58 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
     });
   }
 
-  Future<void> sendMail(String email, String personName, String code) async {
-    String username = 'goswamipranav11@gmail.com';
-    String password = 'Pranav@2002';
-
-    final smtpServer = gmail(username, password);
-    // Use the SmtpServer class to configure an SMTP server:
-    // final smtpServer = SmtpServer('smtp.domain.com');
-    // See the named arguments of SmtpServer for further configuration
-    // options.
-
-    // Create our message.
-    final message = Message()
-      ..from = Address(username, username.toString())
-      ..recipients.add(email)
-      // ..ccRecipients.addAll(['destCc1@example.com', 'destCc2@example.com'])
-      // ..bccRecipients.add(Address('bccAddress@example.com'))
-      ..subject = 'No reply mail From Library IITJ::  ${DateTime.now()}'
-      ..text = 'Heyy ' +
-          personName +
-          '!' +
-          '\nThe mail is from admin @Library IITJ ' +
-          ' on ${DateTime.now()}' +
-          '\nYour 4 digit one time password is' +
-          '\n' +
-          code.toString() +
-          '\nRegards.';
-    // ..html = "<h1>Test</h1>\n<p>Hey! Here's some HTML content</p>";
-
-    try {
-      final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
-    } on MailerException catch (e) {
-      print('Message not sent.');
-      for (var p in e.problems) {
-        print('Problem: ${p.code}: ${p.msg}');
+  verify() {
+    print("idahr aa rha hai");
+    setState(() {
+      _isLoading = true;
+      if (_isResend == 0) {
+        if (_code == widget.otp) {
+          setState(() {
+            _isLoading = false;
+            _isVerified = true;
+          });
+          print("hereItIs");
+          _isResendAgain = true;
+          FirebaseAuth.instance.currentUser!.updateEmail(widget.email).then(
+                (value) => {print("Email Updated")},
+              );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CompleteProfileScreen(),
+            ),
+            (route) => false,
+          );
+        } else {
+          print("hereItIs");
+          showError("Invalid OTP");
+        }
+      } else {
+        if (_code == _resentCode) {
+          setState(() {
+            _isLoading = false;
+            _isVerified = true;
+          });
+          print("hereItIs");
+          _isResendAgain = true;
+          FirebaseAuth.instance.currentUser!.updateEmail(widget.email).then(
+                (value) => {print("Email Updated")},
+              );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CompleteProfileScreen(),
+            ),
+            (route) => false,
+          );
+        } else {
+          showError("Invalid OTP");
+        }
       }
-    }
-    // DONE
+    });
 
-    // Let's send another message using a slightly different syntax:
-    //
-    // Addresses without a name part can be set directly.
-    // For instance `..recipients.add('destination@example.com')`
-    // If you want to display a name part you have to create an
-    // Address object: `new Address('destination@example.com', 'Display name part')`
-    // Creating and adding an Address object without a name part
-    // `new Address('destination@example.com')` is equivalent to
-    // adding the mail address as `String`.
-
-    // final equivalentMessage = Message()
-    //   ..from = Address(username, 'Your name 😀')
-    //   ..recipients.add(Address('goswamipranav11@gmail.com'))
-    //   // ..ccRecipients
-    //   //     .addAll([Address('destCc1@example.com'), 'destCc2@example.com'])
-    //   // ..bccRecipients.add('bccAddress@example.com')
-    //   ..subject = 'Test Dart Mailer library :: 😀 :: ${DateTime.now()}'
-    //   ..text = 'This is the plain text.\nThis is line 2 of the text part.'
-    //   ..html =
-    //       '<h1>Test</h1>\n<p>Hey! Here is some HTML content</p><img src="cid:myimg@3.141"/>'
-    //   ..attachments = [
-    //     // FileAttachment(File('exploits_of_a_mom.png'))
-    //     //   ..location = Location.inline
-    //     //   ..cid = '<myimg@3.141>'
-    //   ];
-
-    final sendReport2 = await send(message, smtpServer);
-
-    // Sending multiple messages with the same connection
-    //
-    // Create a smtp client that will persist the connection
-    var connection = PersistentConnection(smtpServer);
-
-    // Send the first message
-    await connection.send(message);
-
-    // send the equivalent message
-    // await connection.send(equivalentMessage);
-
-    // close the connection
-    await connection.close();
-  }
-
-  signUp() async {
-    try {
-      UserCredential user = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: widget.email, password: widget.password);
-      if (user != null) {
-        await FirebaseAuth.instance.currentUser
-            ?.updateProfile(displayName: widget.name);
-      }
-    } catch (e) {
-      showError("Error Here");
-    }
+    const oneSec = Duration(milliseconds: 2000);
+    _timer = new Timer.periodic(oneSec, (timer) {});
   }
 
   showError(String errormessage) {
@@ -266,57 +217,6 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
         );
       },
     );
-  }
-
-  verify() {
-    print("idahr aa rha hai");
-    setState(() {
-      _isLoading = true;
-      if (_isResend == 0) {
-        if (_code == widget.otp) {
-          setState(() {
-            _isLoading = false;
-            _isVerified = true;
-          });
-          print("hereItIs");
-          _isResendAgain = true;
-          // FirebaseAuth.instance.currentUser.updateEmail(widget.email).then(
-          //       (value) => {print("Email Updated")},
-          //     );
-          signUp();
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Index(),
-            ),
-            (route) => false,
-          );
-        } else {
-          showError("Invalid OTP");
-        }
-      } else {
-        if (_code == _resentCode) {
-          setState(() {
-            _isLoading = false;
-            _isVerified = true;
-          });
-          print("hereItIs");
-          _isResendAgain = true;
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Index(),
-            ),
-            (route) => false,
-          );
-        } else {
-          showError("Invalid OTP");
-        }
-      }
-    });
-
-    const oneSec = Duration(milliseconds: 2000);
-    _timer = new Timer.periodic(oneSec, (timer) {});
   }
 
   @override
@@ -465,7 +365,7 @@ class _VerifyUserLoginState extends State<VerifyUserLogin> {
                               _isResendAgain
                                   ? "Try again in " + _start.toString()
                                   : "Resend",
-                              style: TextStyle(color: Colors.black),
+                              style: TextStyle(color: Colors.blueAccent),
                             ))
                       ],
                     ),

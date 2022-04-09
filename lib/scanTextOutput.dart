@@ -13,12 +13,14 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocr_application/firebase_api.dart';
 import 'package:ocr_application/firebase_ml_api.dart';
+import 'package:ocr_application/index.dart';
 import 'package:ocr_application/main.dart';
 import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
 import 'package:ocr_application/tempharshi2.dart';
 import 'package:ocr_application/text_area_widget.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
+import 'package:ocr_application/userProfile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
@@ -543,7 +545,10 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.home, color: Colors.black),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Index()));
+                },
               ),
               // IconButton(
               //   icon: Icon(Icons.camera_alt_rounded, color: Colors.black),
@@ -552,22 +557,18 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
               //     MaterialPageRoute(builder: (context) => HomePage()));
               //   },
               // ),
-              IconButton(
-                icon: Icon(Icons.photo, color: Colors.black),
-                onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => TextRecognitionWidget()));
-                },
-              ),
+              // IconButton(
+              //   icon: Icon(Icons.photo, color: Colors.black),
+              //   onPressed: () {},
+              // ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
-                // onPressed: () {
-                //   Navigator.push(context,
-                //       MaterialPageRoute(builder: (context) => CreatePdfWidget(newVoiceText: widget.text)));
-                // },
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompleteProfileScreen()));
+                },
               ),
               IconButton(
                 icon: Icon(Icons.logout, color: Colors.black),

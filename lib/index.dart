@@ -233,8 +233,27 @@ class _IndexState extends State<Index> {
                               border: new Border(
                                   right: new BorderSide(
                                       width: 1.0, color: Colors.black))),
-                          child:
-                              Icon(Icons.keyboard_voice, color: Colors.black),
+                          child: GestureDetector(
+                            child:
+                                Icon(Icons.keyboard_voice, color: Colors.black),
+                            onTap: () async {
+                              FirebaseStorage storage =
+                                  FirebaseStorage.instance;
+                              Reference ref = storage.ref().child(
+                                  '${nameOfDocs![a]}' == nameOfDocs![a]
+                                      ? "${FirebaseAuth.instance.currentUser!.displayName}/${nameOfDocs![a]}"
+                                      : "${FirebaseAuth.instance.currentUser!.displayName}/${i - a - 1}.mp3");
+                              Uint8List? downloadedData = await ref.getData();
+                              String textHere = (utf8.decode(downloadedData!));
+
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TextToSpeech(
+                                            newVoiceText: textHere,
+                                          )));
+                            },
+                          ),
                         ),
                         title: GestureDetector(
                           child: Text(
@@ -370,10 +389,10 @@ class _IndexState extends State<Index> {
               //     MaterialPageRoute(builder: (context) => HomePage()));
               //   },
               // ),
-              IconButton(
-                icon: Icon(Icons.photo, color: Colors.black),
-                onPressed: () {},
-              ),
+              // IconButton(
+              //   icon: Icon(Icons.photo, color: Colors.black),
+              //   onPressed: () {},
+              // ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
                 onPressed: () {

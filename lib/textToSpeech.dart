@@ -6,8 +6,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:ocr_application/index.dart';
 import 'package:ocr_application/main.dart';
 import 'package:ocr_application/text_area_widget.dart';
+import 'package:ocr_application/userProfile.dart';
 
 class TextToSpeech extends StatefulWidget {
   String? newVoiceText;
@@ -253,7 +255,10 @@ class _TextToSpeechState extends State<TextToSpeech> {
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.home, color: Colors.black),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Index()));
+                },
               ),
               // IconButton(
               //   icon: Icon(Icons.camera_alt_rounded, color: Colors.black),
@@ -262,24 +267,17 @@ class _TextToSpeechState extends State<TextToSpeech> {
               //     MaterialPageRoute(builder: (context) => HomePage()));
               //   },
               // ),
-              IconButton(
-                icon: Icon(Icons.photo, color: Colors.black),
-                onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => ScanTextOutput()));
-                },
-              ),
+              // IconButton(
+              //   icon: Icon(Icons.photo, color: Colors.black),
+              //   onPressed: () {},
+              // ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
                 onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => TextToSpeech(
-                  //               newVoiceText: "Testing it out!!",
-                  //             )));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompleteProfileScreen()));
                 },
               ),
               IconButton(

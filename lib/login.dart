@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late String _email, _password;
+  String? _email, _password;
   Future<UserCredential> googleSignIn() async {
     GoogleSignIn googleSignIn = GoogleSignIn();
     GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
       _formKey.currentState!.save();
       try {
         await _auth.signInWithEmailAndPassword(
-            email: _email, password: _password);
+            email: _email!, password: _password!);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Index()));
       } catch (e) {

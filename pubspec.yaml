@@ -66,6 +66,8 @@ dependencies:
   iconsax: ^0.0.8
   dio: ^4.0.6
   cloud_firestore: ^3.1.11
+  flutter_signin_button: ^2.0.0
+  whatsapp_share: ^1.1.1
   
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:ocr_application/index.dart';
 import 'package:ocr_application/main.dart';
+import 'package:ocr_application/reportQuery.dart';
+import 'package:ocr_application/updateEmail.dart';
+import 'package:ocr_application/updatePassword.dart';
 import 'package:ocr_application/uploadImage.dart';
 
 class SizeConfig {
@@ -227,30 +231,31 @@ class Body extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
+
             ProfileMenu(
-              text: "UserName",
-              icon: Icons.verified_user_rounded,
+              text: "Update Email",
+              icon: Icons.email_rounded,
               press: () => {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => UpdateUserName(),
-                //   ),
-                // ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdateEmail(),
+                  ),
+                ),
               },
               color: Colors.black,
               iconRight: Icons.edit_note_rounded,
             ),
             ProfileMenu(
-              text: "Email",
-              icon: Icons.email_rounded,
+              text: "Change Password",
+              icon: Icons.verified_user_rounded,
               press: () => {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => UpdateEmail(),
-                //   ),
-                // ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UpdatePassword(),
+                  ),
+                ),
               },
               color: Colors.black,
               iconRight: Icons.edit_note_rounded,
@@ -314,14 +319,14 @@ class Body extends StatelessWidget {
             // ),
             ProfileMenu(
               text: "Report Query",
-              icon: Icons.question_mark_rounded,
+              icon: Icons.whatsapp,
               press: () => {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => ReportQueryNew(),
-                //   ),
-                // ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReportQueryNew(),
+                  ),
+                ),
               },
               color: Colors.black,
               iconRight: Icons.arrow_forward_ios_rounded,
@@ -349,6 +354,80 @@ class Body extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: Container(
+        height: 55.0,
+        child: BottomAppBar(
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Index()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.photo, color: Colors.black),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.person, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompleteProfileScreen()));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.logout, color: Colors.black),
+                onPressed: () {
+                  showAlertDialog(context);
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    // Widget logOutButton = SalomonBottomBarItem(
+    //   icon: Icon(Icons.logout),
+    //   title: Text("LogOut"),
+    //   selectedColor: Colors.redAccent,
+    // );
+    Widget okButton = TextButton(
+      child: Text("Logout"),
+      onPressed: () {
+        _auth.signOut();
+        // Navigator.push(
+        //     context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LandingPage()),
+            (route) => false);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout Alert!!"),
+      content: Text("Are you sure you want to logout?"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
