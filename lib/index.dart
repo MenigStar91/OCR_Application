@@ -6,8 +6,10 @@ import 'package:ocr_application/main.dart';
 import 'package:ocr_application/scanTextOutput.dart';
 import 'package:ocr_application/temp.dart';
 import 'package:ocr_application/tempharshi.dart';
+import 'package:ocr_application/tempharshi2.dart';
 import 'package:ocr_application/textToSpeech.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
+import 'package:ocr_application/userProfile.dart';
 
 class Index extends StatefulWidget {
   const Index({Key? key}) : super(key: key);
@@ -231,6 +233,9 @@ class _IndexState extends State<Index> {
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
                 onPressed: () {
+               
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CompleteProfileScreen()));
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(

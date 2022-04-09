@@ -58,6 +58,12 @@ dependencies:
   firebase_storage: ^10.2.11
   open_file: ^3.2.1
   syncfusion_flutter_pdf: ^20.1.47-beta.1
+  speech_to_text: ^5.4.3
+  cloud_firestore: ^3.1.11
+  flutter_svg: ^1.0.3
+  dotted_border: ^2.0.0+2
+  dio: ^4.0.6
+  iconsax: ^0.0.8
   
 dev_dependencies:
   flutter_test:
