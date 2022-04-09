@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ocr_application/firebase_api.dart';
 import 'package:ocr_application/firebase_ml_api.dart';
@@ -26,7 +27,6 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'save_file_mobile.dart' if (dart.library.html) 'save_file_web.dart';
 import 'package:intl/intl.dart';
 
-
 // import 'dart:html' as html;
 
 class ScanTextOutput extends StatefulWidget {
@@ -39,6 +39,7 @@ class ScanTextOutput extends StatefulWidget {
 }
 
 class _ScanTextOutputState extends State<ScanTextOutput> {
+  int counter = 0;
   String path = "";
 
   bool _isDownloadDone = false;
@@ -55,7 +56,21 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
     final File file = File('${directory.path}/my_file.txt');
     print(file);
     await file.writeAsString(text);
-    final destination = '${FirebaseAuth.instance.currentUser!.displayName}.txt';
+
+    var data = await FirebaseStorage.instance
+        .ref()
+        .child("${FirebaseAuth.instance.currentUser!.displayName}")
+        .listAll();
+    data.items.forEach(
+      (element) => {
+        print("here it is"),
+        setState(() {
+          counter = counter + 1;
+        }),
+      },
+    );
+    final destination =
+        '${FirebaseAuth.instance.currentUser!.displayName}/$counter.txt';
 
     final task = FirebaseApi.uploadFile(destination, file);
 
@@ -64,6 +79,9 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
         });
     final urlDownload = await snapshot.ref.getDownloadURL();
     _download(urlDownload);
+    setState(() {
+      counter = 0;
+    });
     // _download('https://i.imgur.com/YhT0HJ2.jpg');
 
     // _download('${directory.path}/my_file.txt');
@@ -85,6 +103,7 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
       FlutterClipboard.copy(widget.text);
     }
   }
+
   Future<void> generateInvoice() async {
     //Create a PDF document.
     final PdfDocument document = PdfDocument();
@@ -147,13 +166,11 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
     //         lineAlignment: PdfVerticalAlignment.bottom));
     //Create data foramt and convert it to text.
     final DateFormat format = DateFormat.yMMMMd('en_US');
-    final String invoiceNumber =
-        'Date: ${format.format(DateTime.now())}';
+    final String invoiceNumber = 'Date: ${format.format(DateTime.now())}';
     final Size contentSize = contentFont.measureString(invoiceNumber);
     // ignore: leading_newlines_in_multiline_strings
     String address = '''${widget.text}''';
     // String address = '''Test''';
-
 
     PdfTextElement(text: invoiceNumber, font: contentFont).draw(
         page: page,
@@ -162,8 +179,8 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
 
     return PdfTextElement(text: address, font: contentFont).draw(
         page: page,
-        bounds: Rect.fromLTWH(50, 120,
-            pageSize.width+30 , pageSize.height - 120))!;
+        bounds: Rect.fromLTWH(
+            50, 120, pageSize.width + 30, pageSize.height - 120))!;
   }
 
   //Draws the grid
@@ -343,16 +360,16 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
               SizedBox(width: 10),
 
               FloatingActionButton(
-                      heroTag: "2",
+                heroTag: "2",
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
                 onPressed: generateInvoice,
-                child: Icon(Icons.picture_as_pdf_rounded,color: Colors.white),
+                child: Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
               ),
               SizedBox(width: 10),
               FloatingActionButton(
-                      heroTag: "3",
+                heroTag: "3",
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))),
@@ -382,6 +399,22 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
               //     Icons.photo_album_rounded,
               //   ),
               // ),
+              SizedBox(width: 10),
+
+              FloatingActionButton(
+                heroTag: "4",
+                backgroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                onPressed: () async {
+                  await FlutterShare.share(
+                      title: 'HMI OCR Share',
+                      text: widget.text,
+                      // linkUrl: (await ref.getDownloadURL()).toString(),
+                      chooserTitle: 'Example Chooser Title');
+                },
+                child: Icon(Icons.share, color: Colors.white),
+              ),
             ],
           ),
         ),
@@ -534,7 +567,7 @@ class _ScanTextOutputState extends State<ScanTextOutput> {
                 //   Navigator.push(context,
                 //       MaterialPageRoute(builder: (context) => CreatePdfWidget(newVoiceText: widget.text)));
                 // },
-                onPressed: (){},
+                onPressed: () {},
               ),
               IconButton(
                 icon: Icon(Icons.logout, color: Colors.black),
