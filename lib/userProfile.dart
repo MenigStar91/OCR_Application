@@ -111,6 +111,14 @@ class ProfilePic extends StatelessWidget {
 
                   backgroundImage: AssetImage('assets/land.png'),
                 ),
+          // ClipRRect(
+          //   borderRadius: BorderRadius.circular(50.0),
+          //   child: CircleAvatar(
+          //     // backgroundImage: AssetImage("assets/54955.jpg"),
+
+          //     backgroundImage: AssetImage('assets/land.png'),
+          //   ),
+          // ),
           Positioned(
             right: -16,
             bottom: 0,
@@ -198,30 +206,10 @@ class Body extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   DateTime now = DateTime.now();
 
-  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
-      .collection('InTime')
-      .snapshots(includeMetadataChanges: true);
   @override
   Widget build(BuildContext context) {
-    final User? user = _auth.currentUser;
-    final username = user!.displayName;
-    final Future<Null> _listUser = FirebaseFirestore.instance
-        .collection('InTime')
-        .where('personName', isEqualTo: username)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      // var i = 0;
-      querySnapshot.docs.forEach((doc) {
-        // print(doc['entryTime'].toString());
-        // print(doc['personName']);
-
-        // // print(doc["full_name"]);
-        // var x = Service(doc["full_name"],
-        //     'https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/2x/external-cleaning-labour-day-vitaliy-gorbachev-flat-vitaly-gorbachev.png');
-        // _services.insert(i, x);
-        // print(_services);
-      });
-    });
+    // final User? user = _auth.currentUser;
+    // final username = user!.displayName;
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 20),
@@ -230,6 +218,7 @@ class Body extends StatelessWidget {
             ProfilePic(),
             SizedBox(height: 20),
             Text(
+              // "change is here",
               _auth.currentUser!.displayName!,
               style: TextStyle(
                 color: Colors.black,
@@ -372,7 +361,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Profile"),
       ),
-      body: Body(),
+      // body: Body(),
       // bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.profile),
     );
   }
@@ -400,10 +389,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('My Profile',
+            Text(
+              'My Profile',
               style: TextStyle(
-              
-              fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
@@ -411,7 +400,6 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         ),
       ),
       body: Body(),
-     
     );
   }
 

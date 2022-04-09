@@ -10,7 +10,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'package:ocr_application/index.dart';
 
-
 class UploadImage extends StatefulWidget {
   const UploadImage({Key? key}) : super(key: key);
 
@@ -32,10 +31,9 @@ class _UploadImageState extends State<UploadImage>
     final file = await FilePicker.platform.pickFiles(
         type: FileType.custom, allowedExtensions: ['png', 'jpg', 'jpeg']);
     loadingController.forward();
-    if(file==null){
+    if (file == null) {
       print("null hai");
-    }
-    else {
+    } else {
       setState(() async {
         _file = File(file.files.single.path!);
         _platformFile = file.files.first;
@@ -84,7 +82,9 @@ class _UploadImageState extends State<UploadImage>
         path = path.substring(0, path.length - 1);
         print(path);
 
-        FirebaseAuth.instance.currentUser!.updateProfile(photoURL: path);
+        FirebaseAuth.instance.currentUser!.updateProfile(
+            photoURL: path,
+            displayName: FirebaseAuth.instance.currentUser?.displayName!);
 
         Navigator.pushAndRemoveUntil(
           context,

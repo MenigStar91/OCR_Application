@@ -13,6 +13,7 @@ import 'package:ocr_application/tempharshi.dart';
 import 'package:ocr_application/textToSpeech.dart';
 import 'package:ocr_application/text_recognisation_widget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:ocr_application/userProfile.dart';
 
 class Index extends StatefulWidget {
   const Index({Key? key}) : super(key: key);
@@ -350,16 +351,15 @@ class _IndexState extends State<Index> {
               // ),
               IconButton(
                 icon: Icon(Icons.photo, color: Colors.black),
-                onPressed: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => EditImage()));
-                },
+                onPressed: () async {},
               ),
               IconButton(
                 icon: Icon(Icons.person, color: Colors.black),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ShareFile()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CompleteProfileScreen()));
                 },
               ),
               IconButton(
