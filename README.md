@@ -74,4 +74,24 @@ flutter upgrade
 | Jinal Suthar (B20CS023) | Sophomore | CSE |
 ## Screenshots:
 <p float="left">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/1.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/2.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/3.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/4.jpeg?raw=true" width="150" height="300">
+</p>
+<p float="left">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/5.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/6.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/7.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/8.jpeg?raw=true" width="150" height="300">
+</p>
+<p float="left">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/9.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/10.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/13.jpeg?raw=true" width="150" height="300">
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/14.jpeg?raw=true" width="150" height="300">
+</p>
+<p float="left">
+
+<img src = "https://github.com/Pranavchiku/OCR_Application/blob/main/HMI%20OCR%20Images/15.jpeg?raw=true" width="150" height="300">
 </p>
