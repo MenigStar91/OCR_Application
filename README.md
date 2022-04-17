@@ -40,7 +40,7 @@ Step 5:
 flutter upgrade
 ```
 ## OCR Application Features:
-- login/logout
+- Login/Logout
 - Signin/Signup 
   - OTP verification via Email
   - Google Authentication
@@ -52,7 +52,7 @@ flutter upgrade
 - Text to
   - .txt 
   - .pdf 
-  - speech
+  - speech (.mp3)
 - Download/Share file
 - Search bar to search documents
 - Report Query
