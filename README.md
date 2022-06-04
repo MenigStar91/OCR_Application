@@ -1,5 +1,9 @@
-# Optical Character Recognition Application HMI Course Project
-
+# Optical Character Recognition App
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://github.com/Pranavchiku/OCR_Application)
+[![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://console.firebase.google.com/u/0/project/hmi-ocr-application/overview)
+[![Google Assistant](https://img.shields.io/badge/google%20assistant-4285F4?style=for-the-badge&logo=google%20assistant&logoColor=white)]()
+## Overview
+Implemented a way to extract text from images using OCR and convert it to .txt, .mp3, .csv format, all integrated in a mobile application. Easy upload of image from gallery, capturing from camera, crop image and one tap text extraction.
 ## Built using:
 - [Flutter: ](https://flutter.dev/docs/get-started/codelab) Flutter documentation
 - [Dart: ](https://dart.dev/) Dart documentation
