@@ -14,6 +14,32 @@ Implemented a way to extract text from images using OCR and convert it to .txt, 
 - [Google ML Kit:](https://pub.dev/packages/google_ml_kit) Google ML kit documentation
 - [Imgur Api: ](https://imgur.com/) Imgur API documentation
 
+
+## OCR Application Features:
+- Login/Logout
+- Signin/Signup 
+  - OTP verification via Email
+  - Google Authentication
+- View and Update user profile
+- Camera to scan image
+- Cropper to crop the selected Image
+- Gallery Access 
+- Text extraction using OCR
+- Text to
+  - .txt 
+  - .pdf 
+  - speech (.mp3)
+- Download/Share file
+- Search bar to search documents
+- Report Query
+  - Via whatsapp message to admin
+- Automated mailing system
+- Firebase Authentication
+- Firestore storage
+- imgur as dynamic images storage
+## Upcoming features:
+- Phone number verification
+- Conversion to multiple file formats i.e. .csv, .xlsx, etc.
 ## How to Use:
 Step 1: \
 Download or clone this repository by using the link below:
@@ -43,31 +69,6 @@ Step 5:
 ```
 flutter upgrade
 ```
-## OCR Application Features:
-- Login/Logout
-- Signin/Signup 
-  - OTP verification via Email
-  - Google Authentication
-- View and Update user profile
-- Camera to scan image
-- Cropper to crop the selected Image
-- Gallery Access 
-- Text extraction using OCR
-- Text to
-  - .txt 
-  - .pdf 
-  - speech (.mp3)
-- Download/Share file
-- Search bar to search documents
-- Report Query
-  - Via whatsapp message to admin
-- Automated mailing system
-- Firebase Authentication
-- Firestore storage
-- imgur as dynamic images storage
-## Upcoming features:
-- Phone number verification
-- Conversion to multiple file formats i.e. .csv, .xlsx, etc.
 ## Collaborators:
 | Name | Year | Branch|
 | ------------- | ------------- | ------------- |
